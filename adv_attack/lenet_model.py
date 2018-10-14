@@ -10,7 +10,7 @@ from keras.layers import Dense, Activation, Flatten
 from model import Model, NoSuchLayerError
 
 if LooseVersion(keras.__version__) >= LooseVersion('2.0.0'):
-    from keras.layers import Conv2D, MaxPool2D, Flatten, Dense
+    from keras.layers import Conv2D, MaxPool2D, Flatten, Dense,Lambda,MaxPooling2D
 else:
     from keras.layers import Convolution2D
 
@@ -50,7 +50,7 @@ def conv_2d(filters, kernel_shape, strides, padding, input_shape=None):
                                  subsample=strides, border_mode=padding)
 
 
-def cnn_model(logits=False, input_ph=None, img_rows=28, img_cols=28,
+def mnist_model(logits=False, input_ph=None, img_rows=28, img_cols=28,
               channels=1, nb_filters=64, nb_classes=10):
     """
     Defines a CNN model using Keras sequential model
@@ -75,15 +75,6 @@ def cnn_model(logits=False, input_ph=None, img_rows=28, img_cols=28,
     else:
         input_shape = (img_rows, img_cols, channels)
 
-    # layers = [conv_2d(nb_filters, (8, 8), (2, 2), "same",
-    #                   input_shape=input_shape),
-    #           Activation('relu'),
-    #           conv_2d((nb_filters * 2), (6, 6), (2, 2), "valid"),
-    #           Activation('relu'),
-    #           conv_2d((nb_filters * 2), (5, 5), (1, 1), "valid"),
-    #           Activation('relu'),
-    #           Flatten(),
-    #           Dense(nb_classes)]
 
     layers=[conv_2d(6, (5,5), (1,1), 'valid',
                     input_shape=input_shape),
@@ -109,6 +100,7 @@ def cnn_model(logits=False, input_ph=None, img_rows=28, img_cols=28,
     else:
         return model
 
+
 def cifar_model(logits=False, input_ph=None, img_rows=32, img_cols=32,
               channels=1, nb_filters=64, nb_classes=10):
     """
@@ -133,16 +125,6 @@ def cifar_model(logits=False, input_ph=None, img_rows=32, img_cols=32,
         input_shape = (channels, img_rows, img_cols)
     else:
         input_shape = (img_rows, img_cols, channels)
-
-    # layers = [conv_2d(nb_filters, (8, 8), (2, 2), "same",
-    #                   input_shape=input_shape),
-    #           Activation('relu'),
-    #           conv_2d((nb_filters * 2), (6, 6), (2, 2), "valid"),
-    #           Activation('relu'),
-    #           conv_2d((nb_filters * 2), (5, 5), (1, 1), "valid"),
-    #           Activation('relu'),
-    #           Flatten(),
-    #           Dense(nb_classes)]
 
     layers=[conv_2d(32, (5,5), (1,1), 'valid',
                     input_shape=input_shape),

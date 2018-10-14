@@ -18,15 +18,16 @@ import tensorflow as tf
 from tensorflow.python.platform import flags
 import os
 from lenet_model import cifar_model
+from cifar_ff_model import cifar_ff_model
 from cleverhans.utils import pair_visual, grid_visual
 import pickle
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 FLAGS = flags.FLAGS
 
 
-def mnist_tutorial(train_start=0, train_end=50000, test_start=0,
+def cifar_tutorial(train_start=0, train_end=50000, test_start=0,
                    test_end=10000, nb_epochs=6, batch_size=128,
                    learning_rate=0.001, train_dir="train_dir",
                    filename="cifar.ckpt", load_model=True,
@@ -86,8 +87,6 @@ def mnist_tutorial(train_start=0, train_end=50000, test_start=0,
     y_test = keras.utils.to_categorical(y_test, num_classes)
     print ('y_train.shape',y_train.shape)
 
-    # x_train = np.pad(x_train, ((0, 0), (2, 2), (2, 2), (0, 0)), mode='constant')
-    # x_test = np.pad(x_test, ((0, 0), (2, 2), (2, 2), (0, 0)), mode='constant')
 
     # Obtain Image Parameters
     img_rows, img_cols, nchannels = x_train.shape[1:4]
@@ -99,7 +98,10 @@ def mnist_tutorial(train_start=0, train_end=50000, test_start=0,
     y = tf.placeholder(tf.float32, shape=(None, nb_classes))
 
     # Define TF model graph
-    model = cifar_model(img_rows=img_rows, img_cols=img_cols,
+    if train_dir=='cifar_ff_model':
+        model=cifar_ff_model()
+    elif train_dir=='cifar_BP_model':
+        model = cifar_model(img_rows=img_rows, img_cols=img_cols,
                       channels=nchannels, nb_filters=64,
                       nb_classes=nb_classes)
     preds = model(x)
@@ -168,9 +170,10 @@ def mnist_tutorial(train_start=0, train_end=50000, test_start=0,
         feed_dict={x:x_test[:1000], y:y_test[:1000]}
         store_data=adv_x.eval(feed_dict=feed_dict)
         print('store_data: {}'.format(store_data.shape))
-        with open('cifar_{}_data.pkl'.format(method),'wb') as fw:
+        save_name='{}/cifar_{}_data.pkl'.format(train_dir, method)
+        with open(save_name,'wb') as fw:
             pickle.dump(store_data, fw, protocol=2)
-            print('data stored!')
+            print('data stored in {}'.format(save_name))
 
 
     # Consider the attack to be constant
@@ -196,7 +199,7 @@ def mnist_tutorial(train_start=0, train_end=50000, test_start=0,
 
 
 def main(argv=None):
-    mnist_tutorial(nb_epochs=FLAGS.nb_epochs,
+    cifar_tutorial(nb_epochs=FLAGS.nb_epochs,
                    batch_size=FLAGS.batch_size,
                    learning_rate=FLAGS.learning_rate,
                    train_dir=FLAGS.train_dir,
@@ -209,9 +212,9 @@ if __name__ == '__main__':
     flags.DEFINE_integer('nb_epochs', 40, 'Number of epochs to train model')
     flags.DEFINE_integer('batch_size', 128, 'Size of training batches')
     flags.DEFINE_float('learning_rate', 0.001, 'Learning rate for training')
-    flags.DEFINE_string('train_dir', './final_model',
+    flags.DEFINE_string('train_dir', 'cifar_ff_model',
                         'Directory where to save model.')
-    flags.DEFINE_string('filename', 'cifar.ckpt', 'Checkpoint filename.')
+    flags.DEFINE_string('filename', 'FF_init_model.ckpt', 'Checkpoint filename.')
     flags.DEFINE_boolean('load_model', True, 'Load saved model or train.')
     flags.DEFINE_string('method', 'FGSM', 'Adversarial attack method')
     tf.app.run()

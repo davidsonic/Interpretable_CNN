@@ -1,2 +1,0 @@
-model_checkpoint_path: "cifar.ckpt"
-all_model_checkpoint_paths: "cifar.ckpt"
