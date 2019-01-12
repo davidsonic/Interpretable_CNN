@@ -9,8 +9,8 @@ maintained by Jiali Duan and Min Zhang.
     * Python3, keras, tensorflow, cleverhans (Refer to https://github.com/tensorflow/cleverhans), pickle
 
 - [Function]
-    * BP/ff models are provided for cifar10 and mnist dataset under folder `dataset_structre_model`
-    * Models can be trained from scratch if no filename is not specified
+    * BP/ff models are provided for cifar10 and mnist dataset under folder `dataset_structure_model`
+    * Models can be trained from scratch if no filename is specified
     * By changing adversarial attack methods, different algorithms can be tested
     * Refer to `show_sample.ipynb` to visualize generated adversarial samples
 
